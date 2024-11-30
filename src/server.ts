@@ -61,16 +61,7 @@ declare global {
 
   server.applyMiddleware({
     app,
-    cors: {
-      credentials: true,
-      origin: [
-        '*',
-        process.env.CLIENT_URL,
-        process.env.DASHBOARD_URL,
-        process.env.CLIENT_URL_WWW,
-        process.env.DASHBOARD_URL_WWW,
-      ],
-    },
+    cors: false,
   });
 
   app.listen({ port: PORT }, () =>
