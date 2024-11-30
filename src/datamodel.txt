@@ -1,0 +1,203 @@
+type Location {
+  id: ID! @id
+  name: String!
+  direction: String!
+  lat: Float
+  lon: Float
+}
+
+type Brand {
+  id: ID! @id
+  name: String!
+}
+
+type Model {
+  id: ID! @id
+  name: String!
+}
+
+type Product {
+  id: ID! @id
+  slug: String! @unique
+  title: String!
+  description: String!
+  sku: String
+  brand: Brand! @relation(link: INLINE)
+  model: Model! @relation(link: INLINE)
+  currency: Currency! @relation(link: INLINE)
+  photos: [String!]! @scalarList(strategy: RELATION)
+  variants: [Variant!]! @scalarList(strategy: RELATION)
+  variantValues: [VariantValue!]! @scalarList(strategy: RELATION)
+  supplier: Supplier @relation(link: INLINE)
+  priority: Int @default(value: 2) # 1: Low, 2: Medium, 3: High
+  service: Boolean @default(value: false)
+}
+
+type Variant {
+  id: ID! @id
+  title: String!
+  tags: [String!]! @scalarList(strategy: RELATION)
+}
+
+type VariantValueDescription {
+  id: ID! @id
+  variant1: String!
+  variant2: String
+  variant3: String
+}
+
+type VariantValue {
+  id: ID! @id
+  value: VariantValueDescription! @relation(link: INLINE)
+  price: Int!
+  compareAtPrice: Float
+  quantity: Int! @default(value: 0)
+  photo: String
+  sku: String
+  location: Location! @relation(link: INLINE)
+}
+
+type Client {
+  bills: [Bill] @scalarList(strategy: RELATION)
+  orders: [Order]  @scalarList(strategy: RELATION)
+  credits: [Credit]  @scalarList(strategy: RELATION)
+  creditNotes: [CreditNote] @scalarList(strategy: RELATION)
+  appointments: [Appointment]  @scalarList(strategy: RELATION)
+}
+
+type OrderProduct {
+  id: ID! @id
+  product: Product! @relation(link: INLINE)
+  variantValue: VariantValue! @relation(link: INLINE)
+  shopcart: Shopcart! @relation(link: INLINE)
+  order: Order @relation(link: INLINE)
+  quantity: Int! @default(value: 1)
+  price: Int! @default(value: 0)
+}
+
+type Shopcart {
+  id: ID! @id
+  updatedAt: DateTime! @updatedAt
+  paid: Boolean @default(value: false)
+  orderCreated: Boolean @default(value: false)
+  items: [OrderProduct] @scalarList(strategy: RELATION)
+  seller: User @relation(link: INLINE)
+}
+
+type Order {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  status: Int! @default(value: 0)
+  paid: Boolean! @default(value: false)
+  subtotal: Int!
+  tax: Int
+  discount: Int
+  total: Int!
+  commission: Int @default(value: 0)
+  products: [OrderProduct!]! @scalarList(strategy: RELATION)
+  client: Client! @relation(link: INLINE)
+  seller: User! @relation(link: INLINE)
+}
+
+type Bill {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  controlNumber: String! @unique
+  order: Order!
+  paid: Boolean! @default(value: false)
+  credit: Credit @relation(link: INLINE)
+  paymentMetadata: Json
+  charges: [Charge]  @scalarList(strategy: RELATION)
+}
+
+type Charge {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  ref: String!
+  amount: Int!
+  method: String!
+}
+
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  password: String!
+  commission: Int
+  dni: String #TODO tiene que ser require y unique
+  resetToken: String
+  resetTokenExpiry: Float
+  privileges: [userPrivilege!]!  @scalarList(strategy: RELATION)
+}
+
+type Currency {
+  id: ID! @id
+  name: String!
+  symbol: String!
+  rate: Int!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+
+type Supplier {
+  id: ID! @id
+  name: String!
+}
+
+type Credit {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  duration: DateTime!
+  total: Int!
+  interestRate: Float!
+  # 1: Otorgado, 2: Pagado, 3: Pagado con Retraso, 4: Deudor
+  status: Int! @default(value: 1)
+  order: Order! @relation(link: INLINE)
+  user: User! @relation(link: INLINE)
+  client: Client! @relation(link: INLINE)
+  payments: [CreditFee]! @scalarList(strategy: RELATION)
+}
+
+type CreditFee {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  amount: Int!
+  method: String!
+  ref: String!
+}
+
+type Appointment {
+  id: ID! @id
+  date: DateTime!
+  hour: String!
+  client: Client! @relation(link: INLINE)
+  service: Product! @relation(link: INLINE)
+  location: Location! @relation(link: INLINE)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  paid: Boolean! @default(value: false)
+}
+
+type CreditNote {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  total: Int!
+  bill: Bill! @relation(link: INLINE)
+  user: User! @relation(link: INLINE)
+  client: Client! @relation(link: INLINE)
+  # Productos Devueltos
+  products: [OrderProduct!]! @scalarList(strategy: RELATION)
+}
+
+enum userPrivilege {
+  SELLER,
+  CASHIER,
+  WORKER,
+  MANAGER,
+  ADMIN
+}
