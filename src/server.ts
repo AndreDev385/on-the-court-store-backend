@@ -73,22 +73,6 @@ declare global {
     },
   });
 
-  /*
-if (process.env.NODE_ENV !== 'development') {
-  const options: Sentry.NodeOptions = {
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 0.5,
-    integrations: [
-      new RewriteFrames({
-        root: global.__rootdir__,
-      }),
-      Sentry.httpClientIntegration(),
-      new Tracing.Integrations.Mongo({ useMongoose: true }),
-    ],
-  };
-  Sentry.init(options);
-} */
-
   app.listen({ port: PORT }, () =>
     console.log(
       `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`

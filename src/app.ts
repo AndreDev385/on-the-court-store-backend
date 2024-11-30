@@ -3,6 +3,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 // import morgan from 'morgan';
 import { User } from './models';
 
@@ -15,6 +16,18 @@ app.use(
   helmet({
     contentSecurityPolicy:
       process.env.NODE_ENV === 'production' ? undefined : false,
+  })
+);
+app.use(
+  cors({
+    origin: [
+      '*',
+      process.env.CLIENT_URL,
+      process.env.DASHBOARD_URL,
+      process.env.CLIENT_URL_WWW,
+      process.env.DASHBOARD_URL_WWW,
+    ],
+    credentials: true,
   })
 );
 // app.use(morgan('short'));
