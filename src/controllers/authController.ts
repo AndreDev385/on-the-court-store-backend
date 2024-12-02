@@ -11,7 +11,7 @@ import { PromoCode, PromoCodeDocument } from '../models/PromoCode';
 import { resetPasswordEmail, welcomeEmail } from '../lib/emailHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const mailchimp = require('@mailchimp/mailchimp_marketing/src/index');
+// const mailchimp = require('@mailchimp/mailchimp_marketing/src/index');
 
 export const signIn = schemaComposer.createResolver<
   any,
@@ -136,21 +136,21 @@ export const signUp = schemaComposer.createResolver<
         UserDocument,
         PromoCodeDocument
       ];
-      if (args?.newsLetter) {
-        const listId = '886969109d';
-        mailchimp.setConfig({
-          apiKey: process.env.MAILCHIMP,
-          server: 'us17',
-        });
-        await mailchimp.lists.addListMember(listId, {
-          email_address: user.email,
-          status: 'subscribed',
-          merge_fields: {
-            FNAME: user.name,
-            LNAME: user.name,
-          },
-        });
-      }
+      // if (args?.newsLetter) {
+      //   const listId = '886969109d';
+      //   mailchimp.setConfig({
+      //     apiKey: process.env.MAILCHIMP,
+      //     server: 'us17',
+      //   });
+      //   await mailchimp.lists.addListMember(listId, {
+      //     email_address: user.email,
+      //     status: 'subscribed',
+      //     merge_fields: {
+      //       FNAME: user.name,
+      //       LNAME: user.name,
+      //     },
+      //   });
+      // }
       await welcomeEmail(user, promoCode);
     }
     const token = jwt.sign(
@@ -181,7 +181,7 @@ export const signOut = schemaComposer.createResolver({
   description: 'Sign Out the user from the app',
   kind: 'mutation',
   args: {},
-  resolve: async ({ args, context }) => {
+  resolve: async ({ context }) => {
     if (!(context?.req?.cookies?.token ?? false)) {
       return { success: false };
     }
@@ -205,7 +205,7 @@ export const me = schemaComposer.createResolver({
   description: 'Get the logged in user',
   kind: 'query',
   args: {},
-  resolve: async ({ args, context }) => {
+  resolve: async ({ context }) => {
     const { token } = context.req.cookies;
     if (!token) {
       return null;
