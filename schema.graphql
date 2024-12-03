@@ -2349,7 +2349,7 @@ scalar MongoID
 """
 The string representation of JavaScript regexp. You may provide it with flags "/^abc.*/i" or without flags like "^abc.*". More info about RegExp characters and flags: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 """
-scalar RegExpAsString @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf")
+scalar RegExpAsString
 
 """
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
@@ -9283,7 +9283,7 @@ input FilterGetProductInput {
 }
 
 input FilterOneProduct {
-  slug: String
+  _id: String
 }
 
 input FilterProductsByCategoryPriceInput {

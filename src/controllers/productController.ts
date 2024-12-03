@@ -293,7 +293,7 @@ export const updateProduct = schemaComposer.createResolver<
   {
     data: TUpdateProductInput;
     filter: {
-      slug: string;
+      _id: string;
     };
   }
 >({
@@ -303,13 +303,13 @@ export const updateProduct = schemaComposer.createResolver<
   kind: 'mutation',
   args: {
     data: UpdateProductInput,
-    filter: 'input FilterOneProduct { slug: String }',
+    filter: 'input FilterOneProduct { _id: String }',
   },
   async resolve({ args }) {
-    let product = await Product.findOne({ slug: args.filter.slug });
+    let product = await Product.findOne({ _id: args.filter._id });
     if (!product) {
       throw new ApolloError(
-        `The product with slug: ${args.filter.slug} could be found!`
+        `The product with _id: ${args.filter._id} could be found!`
       );
     }
     if (!args.data.title) {
@@ -318,7 +318,7 @@ export const updateProduct = schemaComposer.createResolver<
     }
     if (product.isService) {
       const service = await Product.findOneAndUpdate(
-        { slug: args.filter.slug },
+        { _id: args.filter._id },
         {
           title: args.data.title,
           description: args.data.description,
@@ -397,7 +397,7 @@ export const updateProduct = schemaComposer.createResolver<
     delete data.variants;
     delete data.variantValues;
     product = await Product.findOneAndUpdate(
-      { slug: args.filter.slug },
+      { _id: args.filter._id },
       { ...data } as unknown as ProductDocument,
       { runValidators: true, new: true }
     );
