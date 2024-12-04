@@ -12,7 +12,7 @@ import { resetPasswordEmail, welcomeEmail } from '../lib/emailHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // const mailchimp = require('@mailchimp/mailchimp_marketing/src/index');
-
+//
 export const signIn = schemaComposer.createResolver<
   any,
   {
@@ -21,14 +21,14 @@ export const signIn = schemaComposer.createResolver<
   }
 >({
   name: 'signIn',
-  type: UserTC.getType(),
+  type: `type SignInResponse { token: String }`,
   description: 'Login for a existing user in the db',
   kind: 'mutation',
   args: {
     email: 'String!',
     password: 'String!',
   },
-  resolve: async ({ args, context }) => {
+  resolve: async ({ args }) => {
     const { email, password } = args;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
@@ -44,17 +44,8 @@ export const signIn = schemaComposer.createResolver<
         },
         process.env.SECRET
       );
-      context.res.cookie('token', token, {
-        secure: true,
-        sameSite: 'None',
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365, // 1 yr in ms
-        domain:
-          process.env.NODE_ENV === 'development'
-            ? 'localhost'
-            : 'onthecourt.online',
-      });
-      return user;
+
+      return { token };
     }
     throw new ApolloError('Las contraseñas no coinciden');
   },
@@ -75,7 +66,7 @@ export const signUp = schemaComposer.createResolver<
   }
 >({
   name: 'signUp',
-  type: UserTC.getType(),
+  type: `type SignUpResponse { token: String }`,
   description: 'Sign Up for a new user in the db',
   kind: 'mutation',
   args: {
@@ -89,7 +80,7 @@ export const signUp = schemaComposer.createResolver<
     phone: 'String',
     newsLetter: 'Boolean',
   },
-  resolve: async ({ args, context }) => {
+  resolve: async ({ args }) => {
     const { email } = args;
     const userFromDB = await User.findOne({ email });
     if (userFromDB) {
@@ -161,17 +152,7 @@ export const signUp = schemaComposer.createResolver<
       },
       process.env.SECRET
     );
-    context.res.cookie('token', token, {
-      secure: true,
-      sameSite: 'None',
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 yr in ms
-      domain:
-        process.env.NODE_ENV === 'development'
-          ? 'localhost'
-          : 'onthecourt.online',
-    });
-    return user;
+    return { token };
   },
 });
 
@@ -182,19 +163,12 @@ export const signOut = schemaComposer.createResolver({
   kind: 'mutation',
   args: {},
   resolve: async ({ context }) => {
-    if (!(context?.req?.cookies?.token ?? false)) {
+    if (
+      !(context?.req?.cookies?.token ?? false) &&
+      !(context?.req?.headers?.authorization ?? false)
+    ) {
       return { success: false };
     }
-    context.res.clearCookie('token', {
-      secure: true,
-      sameSite: 'None',
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 yr in ms
-      domain:
-        process.env.NODE_ENV === 'development'
-          ? 'localhost'
-          : 'onthecourt.online',
-    });
     return { success: true };
   },
 });
@@ -207,10 +181,11 @@ export const me = schemaComposer.createResolver({
   args: {},
   resolve: async ({ context }) => {
     const { token } = context.req.cookies;
-    if (!token) {
+    const { authorization } = context.req.headers;
+    if (!token && !authorization) {
       return null;
     }
-    const payload = jwt.decode(token as string);
+    const payload = jwt.decode(token ? token : authorization);
     const user = await User.findById((payload as { id: string }).id);
     if (!user) {
       throw new ApolloError(`El usuario no existe`);

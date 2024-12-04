@@ -2256,10 +2256,10 @@ type Mutation {
   ): RemoveManyVariantValuePayload
 
   """Login for a existing user in the db"""
-  signIn(email: String!, password: String!): User
+  signIn(email: String!, password: String!): SignInResponse
 
   """Sign Up for a new user in the db"""
-  signUp(name: String!, email: String!, password: String!, dni: String, dniType: Int, privilege: Int, commission: Float, phone: String, newsLetter: Boolean): User
+  signUp(name: String!, email: String!, password: String!, dni: String, dniType: Int, privilege: Int, commission: Float, phone: String, newsLetter: Boolean): SignUpResponse
 
   """Sign Out the user from the app"""
   signOut: SignOutMessage
@@ -5255,8 +5255,16 @@ type ShopCartPagination {
   pageInfo: PaginationInfo!
 }
 
+type SignInResponse {
+  token: String
+}
+
 type SignOutMessage {
   success: Boolean!
+}
+
+type SignUpResponse {
+  token: String
 }
 
 type Supplier {
