@@ -792,32 +792,8 @@ export const homeProducts = schemaComposer.createResolver({
   description: '...',
   kind: 'query',
   args: {},
-  async resolve({ args, context }) {
-    const categories = await Category.find({
-      slug: {
-        $in: [
-          'ropa',
-          'cuerdas',
-          'raquetas',
-          'pelotas',
-          'accesorios',
-          'zapatos-2',
-          'pelotas',
-          'ropa-de-ejercicio',
-        ],
-      },
-    });
-    const products: ProductDocument[] = await Promise.all(
-      categories.map((category) =>
-        Product.findOne({ categories: { $in: [category?._id] } }).exec()
-      )
-    );
-    if (products?.length < 8) {
-      const _products = await Product.find({
-        _id: { $nin: products.map((p) => p._id) },
-      });
-      products.push(..._products?.slice(0, 8 - products?.length));
-    }
+  async resolve() {
+    const products = await Product.find({}).sort({ rating: -1 }).limit(10);
     return products;
   },
 });
