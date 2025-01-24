@@ -150,7 +150,7 @@ export const createOrder = schemaComposer.createResolver<
         `The Promo with code: ${args.data.promoCode} doesn't exists`
       );
     }
-    if (promoCode && promoCode.expirationDate >= new Date()) {
+    if (promoCode && promoCode.expirationDate <= new Date()) {
       throw new ApolloError(
         `The Promo with code: ${args.data.promoCode} doesn't exists`
       );

@@ -1,5 +1,4 @@
 import { schemaComposer } from 'graphql-compose';
-import ApolloError from '../lib/NoSentryError';
 import { Setting, SettingTC } from '../models/Setting';
 
 type TCreateCarouselImageInput = {
@@ -110,7 +109,7 @@ export const createSetting = schemaComposer.createResolver<
   args: {
     data: CreateSettingInput,
   },
-  resolve: async ({ args, context }) => {
+  resolve: async ({ args }) => {
     await Setting.updateMany({}, { active: false }).exec();
     const setting = await Setting.create({
       carouselImages: args.data.carouselImages,
@@ -136,7 +135,7 @@ export const updateSetting = schemaComposer.createResolver<
   args: {
     data: UpdateSettingInput,
   },
-  resolve: async ({ args, context }) => {
+  resolve: async ({ args }) => {
     let setting = await Setting.findOne({ active: true }).exec();
     let wasUpdated = false;
 
@@ -183,13 +182,8 @@ export const currentSetting = schemaComposer.createResolver({
   description: 'Get the active setting',
   kind: 'query',
   args: {},
-  resolve: async ({ args, context }) => {
+  resolve: async () => {
     const setting = await Setting.findOne({ active: true });
-
-    if (!setting) {
-      throw new ApolloError(`Setting doesn't exists`);
-    }
-
     return setting;
   },
 });
