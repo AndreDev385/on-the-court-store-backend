@@ -21,14 +21,14 @@ app.use(
 app.use(
   cors({
     origin: '*',
-    //[
+    // [
     //  '*',
     //  process.env.CLIENT_URL,
     //  process.env.DASHBOARD_URL,
     //  process.env.CLIENT_URL_WWW,
     //  process.env.DASHBOARD_URL_WWW,
-    //],
-    //credentials: true,
+    // ],
+    // credentials: true,
   })
 );
 // app.use(morgan('short'));

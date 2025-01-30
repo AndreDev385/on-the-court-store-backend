@@ -4,12 +4,11 @@ import { Order, OrderTC } from '../models/Order';
 import { OrderProduct, OrderProductDocument } from '../models/OrderProduct';
 import { DeliveryNote } from '../models/DeliveryNote';
 import { ShopCart } from '../models/Shopcart';
-import { User, UserDocument } from '../models/User';
+import { User } from '../models/User';
 import { Client } from '../models/Client';
 import { PromoCode } from '../models/PromoCode';
 import { Shipping, ShippingDocument } from '../models/Shipping';
 import { VariantValueDocument } from '../models/VariantValue';
-import { billMail } from '../lib/emailHelper';
 import formatMoney from '../lib/formatMoney';
 
 type TCreateChargeInput = {
@@ -101,7 +100,7 @@ export const createOrder = schemaComposer.createResolver<
   args: {
     data: CreateOrderInput,
   },
-  resolve: async ({ args, context }) => {
+  resolve: async ({ args }) => {
     const { shopCartId, userId, sellerId } = args.data;
     const [shopCart, user, seller, promoCode, shipping] = await Promise.all([
       ShopCart.findOne({ _id: shopCartId })
@@ -283,11 +282,6 @@ export const updateOrder = schemaComposer.createResolver<
       details.push({
         description: (order?.shipping as ShippingDocument)?.name,
         amount: formatMoney(order?.extraFees),
-      });
-      await billMail(order?.client as UserDocument, {
-        controlNumber: deliveryNote?.controlNumber,
-        details,
-        total: formatMoney(order?.total),
       });
     }
     return Order.findOneAndUpdate(
