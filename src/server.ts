@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { ApolloServer } from 'apollo-server-express';
 import app from './app';
 import schema from './graphql/schema';
+import { seedAdminUser } from './seed/admin';
 
 declare global {
   namespace NodeJS {
@@ -25,10 +26,14 @@ declare global {
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true,
-      // dbName: 'test',
+      dbName: 'onthecourt',
     })
     .then(() => {
       console.log(`🤩🍃 MongoDB is Running`);
+      seedAdminUser().catch((err) => {
+        console.error('Error seeding admin user:', err);
+        process.exit(1);
+      });
     })
     .catch((err) => {
       console.log(`❌🤬 ${err}`);

@@ -185,7 +185,7 @@ export const me = schemaComposer.createResolver({
     if (!token && !authorization) {
       return null;
     }
-    const payload = jwt.decode(token ? token : authorization);
+    const payload = jwt.decode(token || authorization);
     const user = await User.findById((payload as { id: string }).id);
     if (!user) {
       throw new ApolloError(`El usuario no existe`);
@@ -239,7 +239,7 @@ export const resetPassword = schemaComposer.createResolver<
       user.resetTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours in ms
       await Promise.all([
         user.save(),
-        resetPasswordEmail(user, user?.resetToken, browserData),
+        resetPasswordEmail(user, user?.resetToken),
       ]);
       return { success: true };
     } catch (err) {
