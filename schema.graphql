@@ -4126,6 +4126,7 @@ type Order {
 type OrderCharges {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date
@@ -6143,6 +6144,7 @@ input CreateChargeInput {
   ref: String!
   method: String!
   bank: String
+  capture: String
   amount: Float!
 }
 
@@ -7088,6 +7090,7 @@ input FilterCountOrder_idOperatorsInput {
 input FilterCountOrderChargesInput {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date
@@ -7955,6 +7958,7 @@ input FilterFindManyOrder_idOperatorsInput {
 input FilterFindManyOrderChargesInput {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date
@@ -8822,6 +8826,7 @@ input FilterFindOneOrder_idOperatorsInput {
 input FilterFindOneOrderChargesInput {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date
@@ -9720,6 +9725,7 @@ input FilterRemoveManyOrder_idOperatorsInput {
 input FilterRemoveManyOrderChargesInput {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date
@@ -10532,6 +10538,7 @@ input FilterRemoveOneOrder_idOperatorsInput {
 input FilterRemoveOneOrderChargesInput {
   ref: String
   bank: String
+  capture: String
   method: String
   amount: Float
   createdAt: Date

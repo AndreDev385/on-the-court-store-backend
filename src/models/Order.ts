@@ -32,6 +32,7 @@ export interface OrderDocument extends mongoose.Document {
     ref: string;
     method: string;
     bank?: string;
+    capture?: string;
     amount: number;
     createdAt?: Date;
   }>;
@@ -117,6 +118,9 @@ const orderSchema = new Schema(
           type: String,
         },
         bank: {
+          type: String,
+        },
+        capture: {
           type: String,
         },
         method: {

@@ -15,6 +15,7 @@ type TCreateChargeInput = {
   ref: string;
   method: string;
   bank?: string;
+  capture?: string;
   amount: number;
   createdAt?: Date;
 };
@@ -47,6 +48,7 @@ const CreateOrderInput = `
     ref: String!
     method: String!
     bank: String
+    capture: String
     amount: Float!
   }
 `;
